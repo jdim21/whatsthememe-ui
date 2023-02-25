@@ -26,7 +26,7 @@ import contract from './contracts/wtm.json';
 // Import everything
 const ethers = require("ethers")
 // let window;
-const contractAddress = "0x2E55B84858909dd8534Df174935d93d374770e3F";
+const contractAddress = "0x35E5aE1Dd0bF2A9Df7A66dda9Ae2303DF77D1Ca3";
 const expectedChainId = 5;
 const abi = contract;
 
