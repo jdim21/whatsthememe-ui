@@ -26,10 +26,9 @@ import contract from './contracts/wtm.json';
 // Import everything
 const ethers = require("ethers")
 // let window;
-const contractAddress = "0xbD93A491651115CD3c2426CFC901865867Fa6df7";
+const contractAddress = "0x2E55B84858909dd8534Df174935d93d374770e3F";
 const expectedChainId = 5;
 const abi = contract;
-const cantoUrl = "https://canto.slingshot.finance/";
 
 const Mint = () => {
   const theme = useTheme();
