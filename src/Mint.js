@@ -15,7 +15,6 @@ import { Avatar, Stack } from "@mui/material";
 import { sizeHeight } from "@mui/system";
 import Button from '@mui/material/Button';
 import { AptosAccount } from "aptos";
-import boizBanner from './boizBanner.png';
 import wtmLogo from './wtmLogo.png';
 import Footer from './Footer';
 import axios from 'axios';
@@ -154,7 +153,7 @@ const Mint = () => {
   }, [])
   
   return (
-    <div style={{height: "100vh", backgroundImage: boizBanner, backgroundColor: theme.palette.primary.light}} fontFamily={theme.typography.fontFamily} ref={ref} id={"mint"}>
+    <div style={{height: "100vh", backgroundColor: theme.palette.primary.light}} fontFamily={theme.typography.fontFamily} ref={ref} id={"mint"}>
     {/* <p>Your account: {this.state.account}</p> */}
     <Footer></Footer>
       <Box sx={{

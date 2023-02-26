@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 // import { ThemeProvider } from '@mui/material';
 // import theme from './AaaTheme';
 
-const pages = ['HOME', 'VISION', 'ABOUT', 'FAQ'];
+const pages = ['HOME', 'VISION', 'CHANGE', 'HISTORY'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 const ResponsiveAppBar = () => {
@@ -34,13 +34,13 @@ const ResponsiveAppBar = () => {
       anchor = (event.target.ownerDocument || document).querySelector(
         "#vision"
       );
-    } else if (event.currentTarget.id == "ABOUT") {
+    } else if (event.currentTarget.id == "CHANGE") {
       anchor = (event.target.ownerDocument || document).querySelector(
-        "#about"
+        "#change"
       );
-    } else if (event.currentTarget.id == "FAQ") {
+    } else if (event.currentTarget.id == "HISTORY") {
       anchor = (event.target.ownerDocument || document).querySelector(
-        "#faq"
+        "#history"
       );
     } else if (event.currentTarget.id == "TRAITS") {
       alert("Coming soon!");
