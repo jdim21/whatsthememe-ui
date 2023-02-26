@@ -27,7 +27,7 @@ import contract from './contracts/wtm.json';
 const ethers = require("ethers")
 // let window;
 const contractAddress = "0xf54162F673D36D8013DC32A1b55fB498711d6046";
-const expectedChainId = 5;
+const expectedChainId = 1;
 const abi = contract;
 
 const Mint = () => {
@@ -85,11 +85,11 @@ const Mint = () => {
           return;
         }
         const signer = provider.getSigner();
-        // const balance = ethers.utils.formatEther(await signer.getBalance());
-        // if (balance < 5) {
-        //   alert("Insufficient funds to mint!");
-        //   return;
-        // }
+        const balance = ethers.utils.formatEther(await signer.getBalance());
+        if (balance < 0.01) {
+          alert("Insufficient funds to mint!");
+          return;
+        }
         const nftContract = new ethers.Contract(contractAddress, abi, signer);
 
         console.log("Initialize payment");
@@ -99,6 +99,7 @@ const Mint = () => {
 
         await nftTxn.wait();
         setMintStatus("none");
+        fetchRemaining();
 
         console.log("Mined. Txn hash: ", nftTxn.hash);
       }
@@ -133,8 +134,22 @@ const Mint = () => {
     )
   }
 
+  const fetchRemaining = async () => {
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const nftContract = new ethers.Contract(contractAddress, abi, provider);
+      let remaining = await nftContract.getRemaining();
+      remaining = parseInt(remaining);
+      console.log("remainingTxn: ", remaining);
+      setWtmRemaining(remaining);
+    } catch (e) {
+      console.log("Error fetching remaining NFTs: " + JSON.stringify(e));
+    } 
+  }
+
   useEffect(() => {
     setWtmRemaining("???");
+    fetchRemaining();
     checkWalletIsConnected();
   }, [])
   
