@@ -16,10 +16,10 @@ import wojak from './wojak2.png';
 import { maxHeight, maxWidth, minHeight } from "@mui/system";
 const ethers = require("ethers")
 const abi = contract;
-// const expectedChainId = 1;
-const expectedChainId = 5;
-// const contractAddress = "0xf54162F673D36D8013DC32A1b55fB498711d6046";
-const contractAddress = "0x4fcce2ba0ade7525dc1fa96df7a2ac6127d70400";
+const expectedChainId = 1;
+// const expectedChainId = 5;
+const contractAddress = "0xf54162F673D36D8013DC32A1b55fB498711d6046";
+// const contractAddress = "0x4fcce2ba0ade7525dc1fa96df7a2ac6127d70400";
 
 const Change = props => {
   const theme = useTheme();
