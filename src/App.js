@@ -16,7 +16,6 @@ import { BrowserRouter as Router, Routes, Route}
 import * as buffer from "buffer";
 window.Buffer = buffer.Buffer;
 
-
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === '#1A2027',
   ...theme.typography.body2,

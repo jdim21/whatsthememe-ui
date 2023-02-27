@@ -1,30 +1,16 @@
 import { useRef } from "react";
 import { useTheme } from '@mui/material/styles'
-import Container from '@mui/material/Container';
-import { CssBaseline, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import { Card } from "@mui/material";
-import Paper from '@mui/material/Paper';
-import Grid from '@mui/material/Unstable_Grid2';
-import discordLogo from './discordLogo.png';
-import twitterLogo from './twitterLogo.png';
-import { Avatar, Stack } from "@mui/material";
-import { sizeHeight } from "@mui/system";
 import Button from '@mui/material/Button';
-import { AptosAccount } from "aptos";
 import wtmLogo from './wtmLogo.png';
 import Footer from './Footer';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { ENGINE_METHOD_CIPHERS } from "constants";
 import contract from './contracts/wtm.json';
 
-// Import everything
 const ethers = require("ethers")
-// let window;
 const contractAddress = "0xf54162F673D36D8013DC32A1b55fB498711d6046";
 const expectedChainId = 1;
 const abi = contract;
@@ -154,7 +140,6 @@ const Mint = () => {
   
   return (
     <div style={{height: "100vh", backgroundColor: theme.palette.primary.light}} fontFamily={theme.typography.fontFamily} ref={ref} id={"mint"}>
-    {/* <p>Your account: {this.state.account}</p> */}
     <Footer></Footer>
       <Box sx={{
         maxWidth: 400,
@@ -168,69 +153,18 @@ const Mint = () => {
         boxShadow: 16,
       }}>
         <Typography color={"white"} sx={{pt: 5, pb: 1}} variant="h4" fontWeight="bold">MINT NFT</Typography>
-        {/* <Typography color={theme.palette.primary.dark} sx={{pt: 5, pb: 1}} variant="h3" fontWeight="bold">MINT NFT</Typography> */}
         <Box sx={{display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: 200, minWidth: 300, borderRadius: 12, paddingTop: "1.5rem"}}>
           <img style={{maxWidth: "75%"}} src={wtmLogo}></img>
         </Box>
         {currentAccount ? mintNftButton() : connectWalletButton()}
-        {/* <Button variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}}onClick={mintWag}>
-          MINT
-        </Button> */}
         <div style={{marginTop: "1rem"}}></div>
         <Typography color={"white"} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">Cost: 0.01 ETH</Typography>
         <div></div>
         <Typography color={"white"} sx={{pt: 2, pb: 2}} variant="p" fontWeight="bold">Remaining: {wtmRemaining} / 1000</Typography>
-        {/* <Typography color={"white"} sx={{pt: 2, pb: 2}} variant="p" fontWeight="bold">Status: SOLD OUT!</Typography> */}
       </Box>
 
-      {/* <Typography color={theme.palette.primary.dark} sx={{pt: 5, pb: 1}} variant="h4" fontWeight="bold">Instructions:</Typography>
-      <Typography color={theme.palette.primary.dark} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">1: Make sure you have the Martian Wallet Extension installed.</Typography>
-      <Typography color={theme.palette.primary.dark} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">2: Press the "MINT" button to pay for the mint and create an offer. Wait a few seconds for the transaction.</Typography>
-      <Typography color={theme.palette.primary.dark} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">3: Press "CLAIM MINT" to receive your minted token in a second transaction.</Typography>
-      <Typography color={theme.palette.primary.dark} sx={{pt: 1, mb: 2}} variant="h7">Explanation: The first transaction pays for the mint and creates a new token offered to you. The second transaction claims the token since Aptos does NOT allow tokens to be sent to you unless you ask for them!</Typography> */}
     </div>
   );
-}
-
-async function mintWag(){
-  // Create a transaction
-  // try {
-  //   const network = await window.martian.network();
-  //   if (network != "Mainnet"){
-  //     alert ("Please use mainnet!");
-  //   }
-  //   else
-  //   {
-  //     const response = await window.martian.connect();
-  //     const sender = response.address;
-  //     const payload = {
-  //       function: "0x1::coin::transfer",
-  //       type_arguments: ["0x1::aptos_coin::AptosCoin"],
-  //       arguments: ["0xa6fd9de4c08b39838bd06729f193bf70f7cb7a61647ea0b564d25e278ad75f1e", 200000000]
-  //     };
-  //     const transaction = await window.martian.generateTransaction(sender, payload);
-  //     const txnHash = await window.martian.signAndSubmitTransaction(transaction);
-  //     // console.log("txnHash; " + JSON.stringify(txnHash));
-  //     const requestOptions = {
-  //       method: "POST",
-  //       headers: { 'Content-Type': 'application/json' },
-  //     }
-  //     // const url = apiGateway + 'mint-payment?address=' + sender + '&txnHash=' + txnHash;
-  //     // const url = 'http://localhost:3001/mint-payment?address=' + sender + '&txnHash=' + txnHash;
-  //     // const url = 'http://localhost:3001/mint-payment?address=' + JSON.stringify(sender) + '&txnHash=' + JSON.stringify(txnHash);
-  //     // console.log("url to fetch: " + url);
-  //     // const fetchRes = await fetch(
-  //     //   url, requestOptions
-  //     // ).then(response => {
-  //     //   // console.log(response.statusText);
-  //     //   return response.text();
-  //     // }).catch(e => JSON.stringify(e));
-  //     // console.log("fetchRes: " + fetchRes);
-
-  //   }
-  // } catch (e) {
-  //   console.log("Error minting: " + JSON.stringify(e));
-  // } 
 }
 
 export default Mint;
