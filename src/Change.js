@@ -212,7 +212,9 @@ const Change = props => {
   }
 
   const fetchImageAndMessage = async(uploadedURI) => {
-    fetch(uploadedURI).then(uriResult => {
+    fetch(uploadedURI,
+      {crossDomain: true}
+      ).then(uriResult => {
     // console.log("uriResult: ", uriResult);
       if (uriResult.status == 200) {
         try {
