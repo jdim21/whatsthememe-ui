@@ -38,11 +38,11 @@ const ResponsiveAppBar = () => {
       anchor = (event.target.ownerDocument || document).querySelector(
         "#change"
       );
+    // } else if (event.currentTarget.id == "HISTORY") {
+    //   anchor = (event.target.ownerDocument || document).querySelector(
+    //     "#history"
+    //   );
     } else if (event.currentTarget.id == "HISTORY") {
-      anchor = (event.target.ownerDocument || document).querySelector(
-        "#history"
-      );
-    } else if (event.currentTarget.id == "TRAITS") {
       alert("Coming soon!");
     } else if (event.currentTarget.id == "MINT") {
       anchor = (event.target.ownerDocument || document).querySelector(

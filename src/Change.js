@@ -5,17 +5,23 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Arweave from 'arweave';
 import wtmLogo from './wtmLogo.png';
+import wtmLogoQuestion from './wtmLogoQuestion.png';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import contract from './contracts/wtm.json';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
 import wojak from './wojak2.png';
+import { maxHeight, maxWidth, minHeight } from "@mui/system";
 const ethers = require("ethers")
-const expectedChainId = 1;
 const abi = contract;
-const contractAddress = "0xf54162F673D36D8013DC32A1b55fB498711d6046";
+// const expectedChainId = 1;
+const expectedChainId = 5;
+// const contractAddress = "0xf54162F673D36D8013DC32A1b55fB498711d6046";
+const contractAddress = "0x4fcce2ba0ade7525dc1fa96df7a2ac6127d70400";
 
-const Change = () => {
+const Change = props => {
   const theme = useTheme();
   const ref = useRef(null);
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -23,6 +29,11 @@ const Change = () => {
   const [numNft, setNumNft] = useState(0);
   const [currFileToUpload, setNewFileToUpload] = useState(null);
   const [currFileNameToUpload, setNewFileNameToUpload] = useState("<none>");
+  const [newURI, setNewURI] = useState("");
+  const [contractInterface, setContractInterface] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [uploadedMessage, setUploadedMessage] = useState(null);
 
   const checkWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -44,8 +55,8 @@ const Change = () => {
       if (!network || !network.chainId || network.chainId != expectedChainId) {
         alert("Please connect to Ethereum!");
       }
-      const nftContract = new ethers.Contract(contractAddress, abi, provider);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
+      const nftContract = new ethers.Contract(contractAddress, abi, signer);
       console.log("signer: ", signer);
       const address = await signer.getAddress();
       console.log("address: ", address);
@@ -53,6 +64,7 @@ const Change = () => {
       const balance = parseInt(balanceOf);
       console.log("balance: ", balance);
       setNumNft(balance);
+      setContractInterface(nftContract);
     } else {
       console.log("No authorized account found!");
     }
@@ -176,7 +188,7 @@ const Change = () => {
         const imageLink = "https://arweave.net/" + transaction.id.toString();
         console.log(imageLink);
 
-        const message = "AHHHHHHH!";
+        const message = newMessage;
 
         const metaDataFlat = '{"token_id":"0","name":"WTM","description":"WhatsTheMeme","seller_fee_basis_points":250,"image":"' + imageLink + '","external_url":"","attributes":[{"display_type":null,"trait_type":"Message","value":"' + message + '"}],"properties":{"files":[{"uri":"' + imageLink + '","type":"image/png"}],"category":"image","creators":[{"address":"0x2d6070C8834BEAB74d6496DbC59B76c761137f33","share":100}]}}';
 
@@ -189,12 +201,42 @@ const Change = () => {
         console.log("URI Link:");
         const uriLink = "https://arweave.net/" + transaction2.id.toString();
         console.log(uriLink);
+        setNewURI(uriLink);
+        fetchImageAndMessage(uriLink);
       }
       console.log("file: ", file);
       reader.readAsArrayBuffer(currFileToUpload);
     } catch (err) {
       console.log("Error uploading: ", err);
     }
+  }
+
+  const fetchImageAndMessage = async(uploadedURI) => {
+    fetch(uploadedURI).then(uriResult => {
+    // console.log("uriResult: ", uriResult);
+      if (uriResult.status == 200) {
+        try {
+          uriResult.json().then(parsed => {
+          // console.log("parsed: ", parsed);
+            if (parsed.image) {
+              setUploadedImage(parsed.image);
+            }
+            if (parsed.attributes && parsed.attributes[0]) {
+              setUploadedMessage(parsed.attributes[0].value);
+            }
+          })
+
+        } catch (e) {
+          console.log("Failed to parse result for " + uploadedURI + ": ", e);
+          setUploadedImage(null);
+          setUploadedMessage(null);
+        }
+      }
+    }).catch(e => {
+      console.log("Attempted to fetch image and message failed for " + uploadedURI + ": ", e);
+      setUploadedImage(null);
+      setUploadedMessage(null);
+    });
   }
 
   const handleNewFileSelected = e => {
@@ -208,13 +250,30 @@ const Change = () => {
 
   const selectImageButtonAndField = () => {
     return (
-      <div>
-      <Button component="label" variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}}>
-        Select Image To Upload
-        <input type="file" accept=".png, .jpg" hidden onChange={handleNewFileSelected} />
-      </Button>
-      <Typography style={{minHeight: "1.5rem"}}>{currFileNameToUpload}</Typography>
-      </div>
+      <Grid sx={{mt: 1.5}} container spacing={0}>
+        <Grid item xs={6}>
+          {/* <Item>xs=8</Item> */}
+          <div>
+            <Button component="label" variant="contained" sx={{ ml: 1, color: 'primary.dark', backgroundColor: 'primary.light' }}>
+              Select Image
+              <input type="file" accept=".png, .jpg" hidden onChange={handleNewFileSelected} />
+            </Button>
+            <Typography style={{ minHeight: "1.5rem" }}>{currFileNameToUpload}</Typography>
+          </div>
+        </Grid>
+        <Grid item xs={6}>
+          {/* <Item>xs=4</Item> */}
+          <TextField
+            required
+            id="outlined"
+            label="Message"
+            size="small"
+            variant="filled"
+            sx={{ mr: 4, backgroundColor: 'primary.light' }}
+            onChange={e => setNewMessage(e.target.value)}
+          />
+        </Grid>
+      </Grid>
     )
   }
 
@@ -224,7 +283,7 @@ const Change = () => {
         return (
           // <Button variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}}onClick={uploadNewImageHandler}>
           <Button disabled={currFileNameToUpload == "<none>"}component="label" variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={handleFileUpload}>
-            Upload New Image
+            Upload New Image & Message
           </Button>
         )
       }
@@ -247,6 +306,49 @@ const Change = () => {
     }
   }
 
+  const newURITextField = (isDisabled) => {
+      return (
+        <div>
+          <TextField
+            required
+            disabled={isDisabled}
+            id="newURIField"
+            label="New URI"
+            size="small"
+            value={newURI}
+            onChange={e => {
+              setNewURI(e.target.value);
+              fetchImageAndMessage(e.target.value);
+            }}
+            variant="filled"
+            sx={{ mt: 1.5, backgroundColor: 'primary.light' }}
+          />
+        </div>
+      );
+  }
+
+  const changeTheNft = async () => {
+    if (!contractInterface) {
+      console.log("Failed to interface with the smart contract. Aborting.");
+      return;
+    }
+    console.log("changing the nft to new uri: ", newURI);
+    try {
+      const result = await contractInterface.setURI(newURI, { value: ethers.utils.parseEther("0.0042069") });
+    } catch (e) {
+      console.log(e);
+      alert("Error changing NFT! Check the console logs for more details.");
+    }
+  }
+
+  const setTheMemeButton = (isDisabled) => {
+      return (
+        <Button disabled={isDisabled} variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
+          CHANGE THE NFT
+        </Button>
+      );
+  }
+
   useEffect(() => {
     checkWalletIsConnected();
   }, [])
@@ -258,7 +360,7 @@ const Change = () => {
         maxWidth: 400,
         minWidth: 300,
         width: '100vw',
-        height: 330,
+        height: 600,
         backgroundColor: 'primary.main',
         margin: "0 auto", 
         marginTop: "2rem",
@@ -273,6 +375,21 @@ const Change = () => {
         {/* {currentAccount ? null : connectWalletButton()} */}
         {selectImageButtonAndField()}
         {currentAccount ? uploadNewImageButton() : connectWalletButton()}
+        <Divider sx={{p: 1.5}} variant="middle"></Divider>
+        <Typography color={"white"} sx={{pt: 1, pb: 1}} variant="h6" >Preview</Typography>
+        <Grid sx={{ mt: 1.5 }} container spacing={0}>
+          <Grid item xs={6}>
+            {/* <Item>xs=8</Item> */}
+            <img style={{maxHeight:"8rem", maxWidth:"8rem"}} src={uploadedImage ? uploadedImage : wtmLogoQuestion}>
+            </img>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography color={"white"} sx={{ pt: 1, pb: 1 }} variant="h7" >{uploadedMessage ? uploadedMessage : "<Your message here>"}</Typography>
+          </Grid>
+        </Grid>
+        <Divider sx={{p: 1.5}} variant="middle"></Divider>
+        {numNft ? newURITextField() : newURITextField(true)}
+        {numNft ? setTheMemeButton() : setTheMemeButton(true)}
         <div style={{marginTop: "1rem"}}></div>
         <Typography color={"white"} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">Cost: 0.0042069 ETH</Typography>
         <div></div>
