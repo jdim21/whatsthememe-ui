@@ -72,7 +72,7 @@ const Home = () => {
         </div>
         <Vision></Vision>
         <Change></Change>
-        <History></History>
+        {/* <History></History> */}
       </Stack>
     </Box>
   );
