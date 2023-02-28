@@ -8,10 +8,12 @@ import wtmLogo from './wtmLogo.png';
 import wtmLogoQuestion from './wtmLogoQuestion.png';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import contract from './contracts/wtm.json';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import wojak from './wojak2.png';
 import { maxHeight, maxWidth, minHeight } from "@mui/system";
 const ethers = require("ethers")
@@ -34,6 +36,7 @@ const Change = props => {
   const [newMessage, setNewMessage] = useState("");
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadedMessage, setUploadedMessage] = useState(null);
+  const [isUploadingToArweave, setIsUploadingToArweave] = useState(false);
 
   const checkWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -94,75 +97,6 @@ const Change = props => {
     }
   }
 
-  const uploadNewImageHandler = async () => { 
-    try {
-      const { ethereum } = window;
-
-      if (ethereum) {
-        setUploadStatus("uploading");
-        const arKey = process.env.REACT_APP_ARWEAVE_SECRET_KEY;
-        const arweave = Arweave.init({
-          host: 'arweave.net',
-          port: 443,
-          protocol: 'https'
-        });
-        const arjKey = JSON.parse(arKey);
-        const address = await arweave.wallets.jwkToAddress(arjKey);
-        console.log("arweave addy: ", address);
-        // const provider = new ethers.providers.Web3Provider(window.ethereum)
-        // const { chainId } = await provider.getNetwork();
-        // if (chainId != expectedChainId) {
-        //   alert("Please connect to Ethereum!");
-        //   return;
-        // }
-        // const signer = provider.getSigner();
-        // const balance = ethers.utils.formatEther(await signer.getBalance());
-        // if (balance < 0.01) {
-        //   alert("Insufficient funds to mint!");
-        //   return;
-        // }
-        // const nftContract = new ethers.Contract(contractAddress, abi, signer);
-
-        // console.log("Initialize payment");
-        // let nftTxn = await nftContract.mint(currentAccount, { value: ethers.utils.parseEther("0.01") });
-        console.log("Uploading... please wait");
-        let data = Buffer.from(wojak.toString('base64'), 'base64');
-
-        let transaction = await arweave.createTransaction({ data: data }, arjKey);
-        // transaction.addTag('Type', 'manifest');
-        // transaction.addTag('Content-Type', 'application/x.arweave-manifest+json');
-        transaction.addTag('Type', 'file');
-        transaction.addTag('Content-Type', 'image/png');
-
-        await arweave.transactions.sign(transaction, arjKey);
-        const res = await arweave.transactions.post(transaction);
-
-        // let uploader = await arweave.transactions.getUploader(transaction);
-
-        // while (!uploader.isComplete) {
-        //   await uploader.uploadChunk();
-        //   console.log(`${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`);
-        // }
-        console.log("txn: ", transaction);
-        console.log("res: ", res);
-        console.log("Done.");
-        console.log("Link:");
-        console.log("https://arweave.net/" + transaction.id.toString());
-
-        // TODO: wait for arweave uplaod
-        // await nftTxn.wait();
-        setUploadStatus("none");
-
-        // console.log("Mined. Txn hash: ", nftTxn.hash);
-      }
-    } catch (err) {
-      console.log("Error minting NFT");
-      console.log(err);
-      alert(err);
-      setUploadStatus("none");
-    }
-  }
-
   const handleFileUpload = async e => { 
     try {
       console.log("Hanlding file upload..");
@@ -170,6 +104,7 @@ const Change = props => {
         console.log("Aborting.");
         return;
       }
+      setIsUploadingToArweave(true);
       const file = currFileToUpload;
       var reader = new FileReader();
       reader.onload = async function(e) {
@@ -211,11 +146,13 @@ const Change = props => {
         console.log(uriLink);
         setNewURI(uriLink);
         fetchImageAndMessage(uriLink);
+        setIsUploadingToArweave(false);
       }
       console.log("file: ", file);
       reader.readAsArrayBuffer(currFileToUpload);
     } catch (err) {
       console.log("Error uploading: ", err);
+      setIsUploadingToArweave(false);
     }
   }
 
@@ -227,7 +164,7 @@ const Change = props => {
           uriResult.json().then(parsed => {
           // console.log("parsed: ", parsed);
             if (parsed.image) {
-              setUploadedImage(parsed.image);
+              setUploadedImage(parsed.image + "?" + performance.now());
             }
             if (parsed.attributes && parsed.attributes[0]) {
               setUploadedMessage(parsed.attributes[0].value);
@@ -287,19 +224,24 @@ const Change = props => {
 
   const uploadNewImageButton = () => {
     if (numNft > 0) {
-      if (currUploadStatus != "uploading") {
+      // if (currUploadStatus != "uploading") {
+      if (!isUploadingToArweave) {
         return (
-          // <Button variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}}onClick={uploadNewImageHandler}>
-          <Button disabled={currFileNameToUpload == "<none>"}component="label" variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={handleFileUpload}>
+          <div style={{marginTop: "1rem"}}>
+          <Button disabled={currFileNameToUpload == "<none>"}component="label" variant="contained" style={{marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={handleFileUpload}>
             Upload New Image & Message
           </Button>
+          </div>
         )
       }
       return (
-        <Button variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}}>
-          <CircularProgress style={{marginRight: "1rem"}} />
-          Uploading...
-        </Button>
+        <div>
+          {/* <CircularProgress style={{marginTop: "1rem", marginRight: "1rem", color: theme.palette.primary.light}} /> */}
+          <Button variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}}>
+            <CircularProgress style={{marginRight: "1rem"}} />
+            Uploading...
+          </Button>
+        </div>
       )
     } else {
       return (
@@ -354,10 +296,92 @@ const Change = props => {
 
   const setTheMemeButton = (isDisabled) => {
       return (
-        <Button disabled={isDisabled} variant="contained" style={{marginTop: "1rem", marginRight: "1rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
+        <Button disabled={isDisabled} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
           CHANGE THE NFT
         </Button>
       );
+  }
+
+  const changeTheNftBox = () => {
+    if (newURI) {
+      return (
+        <Box sx={{
+          maxWidth: 400,
+          minWidth: 300,
+          width: '100vw',
+          height: 490,
+          backgroundColor: 'primary.main',
+          margin: "0 auto", 
+          marginTop: "2rem",
+          marginBottom: "3rem",
+          borderRadius: 8,
+          boxShadow: 16,
+        }}>
+          <Box sx={{display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: 200, minWidth: 300, borderRadius: 12, paddingTop: "1.5rem"}}>
+          </Box>
+          {selectImageButtonAndField()}
+          {currentAccount ? uploadNewImageButton() : connectWalletButton()}
+          <Divider sx={{p: 1.5}} variant="middle"></Divider>
+          <Typography color={"white"} sx={{pt: 1, pb: 1}} variant="h6" >
+            Preview
+            <IconButton size="small" sx={{ml: 1}} style={{color:"white"}} onClick={() => fetchImageAndMessage(newURI)} aria-label="refresh button" component="label">
+              <RefreshIcon />
+            </IconButton>
+          </Typography>
+          <Grid sx={{ mt: 1.5 }} container spacing={0}>
+            <Grid item xs={6}>
+              <img style={{maxHeight:"8rem", maxWidth:"8rem"}} src={uploadedImage ? uploadedImage : wtmLogoQuestion}>
+              </img>
+            </Grid>
+            <Grid item xs={6}>
+              <Typography color={"white"} sx={{ pt: 1, pb: 1 }} variant="h7" >{uploadedMessage ? uploadedMessage : "<Your message here>"}</Typography>
+            </Grid>
+          </Grid>
+          <Divider sx={{p: 1.5}} variant="middle"></Divider>
+          {/* {numNft ? newURITextField() : newURITextField(true)} */}
+          {numNft ? setTheMemeButton() : setTheMemeButton(true)}
+          <div style={{marginTop: "1rem"}}></div>
+          <Typography color={"white"} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">Cost: 0.0042069 ETH</Typography>
+          <div></div>
+        </Box>
+      );
+    }
+    return (
+      <Box sx={{
+        maxWidth: 400,
+        minWidth: 300,
+        width: '100vw',
+        height: 180,
+        backgroundColor: 'primary.main',
+        margin: "0 auto", 
+        marginTop: "2rem",
+        marginBottom: "3rem",
+        borderRadius: 8,
+        boxShadow: 16,
+      }}>
+        <Box sx={{display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: 200, minWidth: 300, borderRadius: 12, paddingTop: "1.5rem"}}>
+        </Box>
+        {selectImageButtonAndField()}
+        {currentAccount ? uploadNewImageButton() : connectWalletButton()}
+        {/* <Divider sx={{p: 1.5}} variant="middle"></Divider>
+        <Typography color={"white"} sx={{pt: 1, pb: 1}} variant="h6" >Preview</Typography>
+        <Grid sx={{ mt: 1.5 }} container spacing={0}>
+          <Grid item xs={6}>
+            <img style={{maxHeight:"8rem", maxWidth:"8rem"}} src={uploadedImage ? uploadedImage : wtmLogoQuestion}>
+            </img>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography color={"white"} sx={{ pt: 1, pb: 1 }} variant="h7" >{uploadedMessage ? uploadedMessage : "<Your message here>"}</Typography>
+          </Grid>
+        </Grid> */}
+        {/* <Divider sx={{p: 1.5}} variant="middle"></Divider> */}
+        {/* {numNft ? newURITextField() : newURITextField(true)} */}
+        {/* {numNft ? setTheMemeButton() : setTheMemeButton(true)} */}
+        {/* <div style={{marginTop: "1rem"}}></div> */}
+        {/* <Typography color={"white"} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">Cost: 0.0042069 ETH</Typography> */}
+        <div></div>
+      </Box>
+    );
   }
 
   useEffect(() => {
@@ -367,45 +391,7 @@ const Change = props => {
   return (
     <div style={{backgroundColor: theme.palette.primary.light}} fontFamily={theme.typography.fontFamily} ref={ref} id={"change"}>
       <Typography color={theme.palette.primary.dark} sx={{pt: 5, pb: 1}} variant="h3" fontWeight="bold">CHANGE THE NFT</Typography>
-      <Box sx={{
-        maxWidth: 400,
-        minWidth: 300,
-        width: '100vw',
-        height: 600,
-        backgroundColor: 'primary.main',
-        margin: "0 auto", 
-        marginTop: "2rem",
-        marginBottom: "2rem",
-        borderRadius: 8,
-        boxShadow: 16,
-      }}>
-        {/* <Typography color={"white"} sx={{pt: 5, pb: 1}} variant="h4" fontWeight="bold">CHANGE THE NFT</Typography> */}
-        <Box sx={{display: "block", marginLeft: "auto", marginRight: "auto", maxWidth: 200, minWidth: 300, borderRadius: 12, paddingTop: "1.5rem"}}>
-          {/* <img style={{maxWidth: "75%"}} src={wtmLogo}></img> */}
-        </Box>
-        {/* {currentAccount ? null : connectWalletButton()} */}
-        {selectImageButtonAndField()}
-        {currentAccount ? uploadNewImageButton() : connectWalletButton()}
-        <Divider sx={{p: 1.5}} variant="middle"></Divider>
-        <Typography color={"white"} sx={{pt: 1, pb: 1}} variant="h6" >Preview</Typography>
-        <Grid sx={{ mt: 1.5 }} container spacing={0}>
-          <Grid item xs={6}>
-            {/* <Item>xs=8</Item> */}
-            <img style={{maxHeight:"8rem", maxWidth:"8rem"}} src={uploadedImage ? uploadedImage : wtmLogoQuestion}>
-            </img>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography color={"white"} sx={{ pt: 1, pb: 1 }} variant="h7" >{uploadedMessage ? uploadedMessage : "<Your message here>"}</Typography>
-          </Grid>
-        </Grid>
-        <Divider sx={{p: 1.5}} variant="middle"></Divider>
-        {numNft ? newURITextField() : newURITextField(true)}
-        {numNft ? setTheMemeButton() : setTheMemeButton(true)}
-        <div style={{marginTop: "1rem"}}></div>
-        <Typography color={"white"} sx={{pt: 0, pb: 1}} variant="h6" fontWeight="bold">Cost: 0.0042069 ETH</Typography>
-        <div></div>
-        {/* <Typography color={"white"} sx={{pt: 2, pb: 2}} variant="p" fontWeight="bold">Remaining: {wtmRemaining} / 1000</Typography> */}
-      </Box>
+      {changeTheNftBox()}
     </div>);
 }
 
