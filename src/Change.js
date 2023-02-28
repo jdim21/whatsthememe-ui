@@ -101,7 +101,12 @@ const Change = props => {
       if (ethereum) {
         setUploadStatus("uploading");
         const arKey = process.env.REACT_APP_ARWEAVE_SECRET_KEY;
-        const arweave = Arweave.init({});
+        // const arweave = Arweave.init({});
+        const arweave = Arweave.init({
+          host: 'arweave.net',
+          port: 443,
+          protocol: 'https'
+        });
         const arjKey = JSON.parse(arKey);
         const address = await arweave.wallets.jwkToAddress(arjKey);
         console.log("arweave addy: ", address);
@@ -172,7 +177,12 @@ const Change = props => {
         let arrayBuffer = new Uint8Array(reader.result);
         console.log(arrayBuffer);
         const arKey = process.env.REACT_APP_ARWEAVE_SECRET_KEY;
-        const arweave = Arweave.init({});
+        // const arweave = Arweave.init({});
+        const arweave = Arweave.init({
+          host: 'arweave.net',
+          port: 443,
+          protocol: 'https'
+        });
         const arjKey = JSON.parse(arKey);
         const address = await arweave.wallets.jwkToAddress(arjKey);
         console.log("arweave addy: ", address);
