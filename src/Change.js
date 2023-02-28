@@ -101,7 +101,6 @@ const Change = props => {
       if (ethereum) {
         setUploadStatus("uploading");
         const arKey = process.env.REACT_APP_ARWEAVE_SECRET_KEY;
-        // const arweave = Arweave.init({});
         const arweave = Arweave.init({
           host: 'arweave.net',
           port: 443,
@@ -177,7 +176,6 @@ const Change = props => {
         let arrayBuffer = new Uint8Array(reader.result);
         console.log(arrayBuffer);
         const arKey = process.env.REACT_APP_ARWEAVE_SECRET_KEY;
-        // const arweave = Arweave.init({});
         const arweave = Arweave.init({
           host: 'arweave.net',
           port: 443,
@@ -222,9 +220,7 @@ const Change = props => {
   }
 
   const fetchImageAndMessage = async(uploadedURI) => {
-    fetch(uploadedURI,
-      {mode: "no-cors"}
-      ).then(uriResult => {
+    fetch(uploadedURI).then(uriResult => {
     // console.log("uriResult: ", uriResult);
       if (uriResult.status == 200) {
         try {
