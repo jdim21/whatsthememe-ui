@@ -13,6 +13,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import contract from './contracts/wtm.json';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
+import HelpIcon from '@mui/icons-material/Help';
+import Tooltip from '@mui/material/Tooltip';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import wojak from './wojak2.png';
 import { maxHeight, maxWidth, minHeight } from "@mui/system";
@@ -285,8 +287,9 @@ const Change = props => {
     console.log("changing the nft to new uri: ", newURI);
     try {
       const result = await contractInterface.setURI(newURI, { value: ethers.utils.parseEther("0.0042069") });
-      const isTestnet = expectedChainId != 1 ? "testnets-" : "";
-      const openseaRefreshUrl = "https://" + isTestnet + "api.opensea.io/api/v1/asset/" + contractAddress + "/0/?force_update=true"
+      // const isTestnet = expectedChainId != 1 ? "testnets-" : "";
+      // const openseaRefreshUrl = "https://" + isTestnet + "api.opensea.io/api/v1/asset/" + contractAddress + "/0/?force_update=true"
+      const openseaRefreshUrl = "https://api.opensea.io/api/v1/asset/0xf54162F673D36D8013DC32A1b55fB498711d6046/0/?force_update=true";
       fetch(openseaRefreshUrl);
     } catch (e) {
       console.log(e);
@@ -322,11 +325,14 @@ const Change = props => {
           {selectImageButtonAndField()}
           {currentAccount ? uploadNewImageButton() : connectWalletButton()}
           <Divider sx={{p: 1.5}} variant="middle"></Divider>
-          <Typography color={"white"} sx={{pt: 1, pb: 1}} variant="h6" >
+          <Typography style={{position: "relative"}} color={"white"} sx={{pt: 1, pb: 1}} variant="h6" >
             Preview
             <IconButton size="small" sx={{ml: 1}} style={{color:"white"}} onClick={() => fetchImageAndMessage(newURI)} aria-label="refresh button" component="label">
               <RefreshIcon />
             </IconButton>
+            <Tooltip title="For large images, please allow up to 1 minute for the upload. Press the refresh button to check if the upload has completed.">
+              <HelpIcon style={{color:"white", position:"absolute", top:"5px", right:"5px"}}/>
+            </Tooltip>
           </Typography>
           <Grid sx={{ mt: 1.5 }} container spacing={0}>
             <Grid item xs={6}>
