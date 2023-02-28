@@ -343,6 +343,9 @@ const Change = props => {
     console.log("changing the nft to new uri: ", newURI);
     try {
       const result = await contractInterface.setURI(newURI, { value: ethers.utils.parseEther("0.0042069") });
+      const isTestnet = expectedChainId != 1 ? "testnets-" : "";
+      const openseaRefreshUrl = "https://" + isTestnet + "api.opensea.io/api/v1/asset/" + contractAddress + "/0/?force_update=true"
+      fetch(openseaRefreshUrl);
     } catch (e) {
       console.log(e);
       alert("Error changing NFT! Check the console logs for more details.");
