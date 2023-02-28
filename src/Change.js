@@ -309,7 +309,7 @@ const Change = props => {
           maxWidth: 400,
           minWidth: 300,
           width: '100vw',
-          height: 490,
+          height: 520,
           backgroundColor: 'primary.main',
           margin: "0 auto", 
           marginTop: "2rem",
