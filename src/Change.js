@@ -303,10 +303,12 @@ const Change = props => {
 
   const setTheMemeButton = (isDisabled) => {
     if (isChanging) {
-      <Button disabled={isDisabled} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
-        <CircularProgress style={{marginRight: "1rem"}} />
-        CHANGE THE NFT
-      </Button>
+      return (
+        <Button disabled={true} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
+          <CircularProgress style={{marginRight: "1rem"}} />
+          CHANGE THE NFT
+        </Button>
+      );
     }
     return (
       <Button disabled={isDisabled} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
