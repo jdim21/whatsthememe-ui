@@ -340,7 +340,7 @@ const Change = props => {
             <IconButton size="small" sx={{ml: 1}} style={{color:"white"}} onClick={() => fetchImageAndMessage(newURI)} aria-label="refresh button" component="label">
               <RefreshIcon />
             </IconButton>
-            <Tooltip title="For large images, please allow up to 1 minute for the upload. Press the refresh button to check if the upload has completed.">
+            <Tooltip title="For large images, please allow up to 1 minute for the upload. Press the refresh button to check if the upload has completed. On occasion, the upload can fail and needs to be reuploaded above. Once the preview shows as expected, continue below.">
               <HelpIcon style={{color:"white", position:"absolute", top:"5px", right:"5px"}}/>
             </Tooltip>
           </Typography>
