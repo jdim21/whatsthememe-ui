@@ -16,7 +16,7 @@ const Footer = () => {
       <a href="https://twitter.com/WhatsTheMemeNFT">
         <img style={{marginBottom:26, marginRight: 26}} width="36" height="32" src={twitterLogo}></img>
       </a>
-      <img width="96" height="96" src={wtmLogo}></img>
+      <a href="/"><img width="96" height="96" src={wtmLogo}></img></a>
       <a href="https://opensea.io/collection/whatsthememe">
         <img style={{marginBottom:26, marginLeft: 26}} width="32" height="34" src={openseaLogo}></img>
       </a>
