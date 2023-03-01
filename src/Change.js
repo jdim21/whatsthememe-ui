@@ -39,6 +39,7 @@ const Change = props => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [uploadedMessage, setUploadedMessage] = useState(null);
   const [isUploadingToArweave, setIsUploadingToArweave] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
 
   const checkWalletIsConnected = async () => {
     const { ethereum } = window;
@@ -286,23 +287,32 @@ const Change = props => {
     }
     console.log("changing the nft to new uri: ", newURI);
     try {
-      const result = await contractInterface.setURI(newURI, { value: ethers.utils.parseEther("0.0042069") });
-      // const isTestnet = expectedChainId != 1 ? "testnets-" : "";
-      // const openseaRefreshUrl = "https://" + isTestnet + "api.opensea.io/api/v1/asset/" + contractAddress + "/0/?force_update=true"
-      const openseaRefreshUrl = "https://api.opensea.io/api/v1/asset/0xf54162F673D36D8013DC32A1b55fB498711d6046/0/?force_update=true";
+      setIsChanging(true);
+      let result = await contractInterface.setURI(newURI, { value: ethers.utils.parseEther("0.0042069") });
+      await result.wait();
+      const isTestnet = expectedChainId != 1 ? "testnets-" : "";
+      const openseaRefreshUrl = "https://" + isTestnet + "api.opensea.io/api/v1/asset/" + contractAddress + "/0/?force_update=true"
       fetch(openseaRefreshUrl);
+      setIsChanging(false);
     } catch (e) {
       console.log(e);
+      setIsChanging(false);
       alert("Error changing NFT! Check the console logs for more details.");
     }
   }
 
   const setTheMemeButton = (isDisabled) => {
-      return (
-        <Button disabled={isDisabled} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
-          CHANGE THE NFT
-        </Button>
-      );
+    if (isChanging) {
+      <Button disabled={isDisabled} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
+        <CircularProgress style={{marginRight: "1rem"}} />
+        CHANGE THE NFT
+      </Button>
+    }
+    return (
+      <Button disabled={isDisabled} variant="contained" style={{marginTop: "1.5rem"}} sx={{color: 'primary.dark', backgroundColor: 'primary.light'}} onClick={changeTheNft}>
+        CHANGE THE NFT
+      </Button>
+    );
   }
 
   const changeTheNftBox = () => {

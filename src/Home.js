@@ -1,14 +1,12 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Box, Stack, Paper, CssBaseline, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import wtmLogo from './wtmLogo.png';
+import { Box, Stack, Typography } from '@mui/material';
+import wtmLogoQuestion from './wtmLogoQuestion.png';
 import Vision from './Vision';
 import Change from './Change';
 import History from './History';
 import { useTheme } from '@mui/material/styles'
 import contract from './contracts/wtm.json';
-import { height } from '@mui/system';
 const ethers = require("ethers")
 
 const Home = () => {
@@ -63,7 +61,7 @@ const Home = () => {
             maxHeight: '100%',
 
           }}>
-            <img ref={ref} id={"home"} className="imgFullWidth" src={currImgURI ? currImgURI : wtmLogo}>
+            <img ref={ref} id={"home"} className="imgFullWidth" src={currImgURI ? currImgURI : wtmLogoQuestion}>
             </img>
             <Typography color={theme.palette.primary.dark} sx={{pt: 2, pb: 1}} variant="h5" fontWeight="bold">
               Message: {currMessage}
